@@ -1,0 +1,48 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:context=".ImcActivity">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/icon_fitness"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/imc" />
+
+        <TextView
+            style="@style/textViewForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/imc_desc" />
+
+        <EditText
+            android:id="@+id/edit_imc_weight"
+            style="@style/editTextForm"
+            android:hint="@string/weight" />
+
+        <EditText
+            android:id="@+id/edit_imc_height"
+            style="@style/editTextForm"
+            android:hint="@string/height" />
+
+        <Button
+            android:id="@+id/btn_imc_send"
+            style="@style/buttonform"
+            android:text="@string/calc" />
+
+    </LinearLayout>
+
+</ScrollView>
