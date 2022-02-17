@@ -2,6 +2,7 @@ package co.tiagoaguiar.codelab.myapplication;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -9,7 +10,10 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class SqlHelper extends SQLiteOpenHelper {
@@ -41,6 +45,38 @@ public class SqlHelper extends SQLiteOpenHelper {
         Log.d("TESTE", "on upgrade disparado  ");
     }
 
+
+    List<Register> getRegisterBy(String type) {
+        List<Register> registers = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM calc WHERE type_calc = ?", new String[]{type});
+
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+
+                    Register register = new Register();
+
+                    register.type = cursor.getString(cursor.getColumnIndex("type_calc"));
+                    register.response = cursor.getDouble(cursor.getColumnIndex("res"));
+                    register.createdDate = cursor.getString(cursor.getColumnIndex("created_date"));
+
+                    registers.add(register);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("SQLite", e.getMessage(), e);
+
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+        }
+
+        return registers;
+    }
+
+
     long addItem(String type, double response) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -67,6 +103,48 @@ public class SqlHelper extends SQLiteOpenHelper {
         } finally {
             if (db.isOpen())
                 db.endTransaction();
+        }
+        return calcId;
+    }
+
+    long updateItem(String type, double response, int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        long calcId = 0;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("type_calc", type);
+            values.put("res", response);
+
+            String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("pt", "BR"))
+                    .format(Calendar.getInstance().getTime());
+            values.put("created_date", now);
+
+            // Passamos o whereClause para verificar o registro pelo ID e TYPE_CALC
+            calcId = db.update("calc", values, "id = ? and type_calc = ?", new String[]{String.valueOf(id), type});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("SQLite", e.getMessage(), e);
+        } finally {
+            db.endTransaction();
+        }
+        return calcId;
+    }
+
+    long removeItem(String type, int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        long calcId = 0;
+
+        try {
+            // Passamos o whereClause para verificar o registro pelo ID e TYPE_CALC
+            calcId = db.delete("calc", "id = ? and type_calc = ?", new String[]{String.valueOf(id), type});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("SQLite", e.getMessage(), e);
+        } finally {
+            db.endTransaction();
         }
         return calcId;
     }

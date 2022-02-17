@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".ListCalcActivity"
+            android:exported="true">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/AppTheme.Splash">
@@ -22,11 +28,13 @@
         <activity
             android:name=".TmbActivity"
             android:exported="true"
-            android:theme="@style/AppTheme.Splash"/>
-        <activity android:name=".ImcActivity"
-            android:theme="@style/AppTheme.Splash"/>
-        <activity android:name=".MainActivity"
-            android:theme="@style/AppTheme.Splash"/>
+             />
+        <activity
+            android:name=".ImcActivity"
+            />
+        <activity
+            android:name=".MainActivity"
+            />
     </application>
 
 </manifest>

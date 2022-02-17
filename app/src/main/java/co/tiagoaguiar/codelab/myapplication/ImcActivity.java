@@ -1,13 +1,17 @@
 package co.tiagoaguiar.codelab.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -17,7 +21,7 @@ import android.widget.Toast;
 public class ImcActivity extends AppCompatActivity {
 
     private EditText editHeight;
-    private EditText editWeigth;
+    private EditText editWeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +29,7 @@ public class ImcActivity extends AppCompatActivity {
         setContentView(R.layout.activity_imc);
 
         editHeight = findViewById(R.id.edit_imc_height);
-        editWeigth = findViewById(R.id.edit_imc_weight);
+        editWeight = findViewById(R.id.edit_imc_weight);
 
         Button btnSend = findViewById(R.id.btn_imc_send);
 
@@ -36,7 +40,7 @@ public class ImcActivity extends AppCompatActivity {
                 return;
             }
             String sHeight = editHeight.getText().toString();
-            String sWeigth = editWeigth.getText().toString();
+            String sWeigth = editWeight.getText().toString();
 
             int height = Integer.parseInt(sHeight);
             int weight = Integer.parseInt(sWeigth);
@@ -56,8 +60,10 @@ public class ImcActivity extends AppCompatActivity {
                         new Thread(() -> {
                             long calcId = SqlHelper.getInstance(ImcActivity.this).addItem("imc", result);
                             runOnUiThread(() -> {
-                                if (calcId > 0)
+                                if (calcId > 0) {
                                     Toast.makeText(ImcActivity.this, R.string.calc_saved, Toast.LENGTH_SHORT).show();
+                                    openListCalcActivity();
+                                }
                             });
                         }).start();
                     }))
@@ -67,8 +73,31 @@ public class ImcActivity extends AppCompatActivity {
 
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(editHeight.getWindowToken(), 0);
-            imm.hideSoftInputFromWindow(editWeigth.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(editWeight.getWindowToken(), 0);
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_list:
+                openListCalcActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openListCalcActivity() {
+        Intent intent = new Intent(ImcActivity.this, ListCalcActivity.class);
+        intent.putExtra("type", "imc");
+        startActivity(intent);
     }
 
     @StringRes
@@ -95,9 +124,9 @@ public class ImcActivity extends AppCompatActivity {
     }
 
     private boolean validate() {
-        return (!editWeigth.getText().toString().startsWith("0")
+        return (!editWeight.getText().toString().startsWith("0")
                 && !editHeight.getText().toString().startsWith("0")
-                && !editWeigth.getText().toString().isEmpty()
+                && !editWeight.getText().toString().isEmpty()
                 && !editHeight.getText().toString().isEmpty());
 
     }
